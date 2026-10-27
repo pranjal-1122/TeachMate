@@ -4,6 +4,7 @@ import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { ProgressBar } from '../common/ProgressBar';
 import { DiagramRenderer } from '../common/DiagramRenderer';
+import { MarkdownRenderer } from '../common/MarkdownRenderer';
 import {
   ChevronDown, ChevronUp, CheckCircle, Clock,
   BookOpen, HelpCircle, Eye, Sparkles, ArrowRight
@@ -135,9 +136,7 @@ export const ScrollCardStack: React.FC<ScrollCardStackProps> = ({
           </h3>
 
           {/* Markdown Content */}
-          <div className="prose prose-slate dark:prose-invert max-w-none text-slate-reading dark:text-structure-dark leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
-            {currentCard.content_markdown}
-          </div>
+          <MarkdownRenderer content={currentCard.content_markdown} />
 
           {/* Render Interactive Diagram if card_type == 'diagram' or media_spec has diagram */}
           {currentCard.media_spec?.spec && (

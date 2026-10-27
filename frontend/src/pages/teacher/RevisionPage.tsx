@@ -4,6 +4,7 @@ import { sessionsApi, RevisionDetail } from '../../api/sessions';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Alert, StatusBadge } from '../../components/common/ProgressBar';
+import { MarkdownRenderer } from '../../components/common/MarkdownRenderer';
 import { DecisionModal } from './DecisionModal';
 import { BookOpen, RefreshCw, Send, AlertTriangle, ArrowLeft } from 'lucide-react';
 
@@ -194,9 +195,7 @@ export const RevisionPage: React.FC = () => {
 
       {/* Revision Content Card */}
       <Card className="p-6 sm:p-8 bg-[#FDFCF7] dark:bg-surface-dark border-line-light dark:border-line-dark shadow-subtle">
-        <div className="prose prose-slate dark:prose-invert max-w-none text-slate-reading dark:text-structure-dark leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
-          {revision.content}
-        </div>
+        <MarkdownRenderer content={revision.content} />
       </Card>
 
       {/* Quick Check Verification Form */}
