@@ -1,0 +1,30 @@
+# Environment Variables (strictly private)
+.env
+.env.local
+backend/.env
+backend/.env.local
+!.env.example
+!backend/.env.example
+
+# Python
+venv/
+backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+teachmate_test.db
+
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.vite/
+
+# Logs & System
+*.log
+.DS_Store
+.idea/
+.vscode/

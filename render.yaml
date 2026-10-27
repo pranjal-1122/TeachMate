@@ -1,0 +1,50 @@
+databases:
+  - name: teachmate-db
+    databaseName: teachmate
+    user: teachmate_user
+    plan: free
+
+services:
+  # Backend FastAPI Web Service
+  - type: web
+    name: teachmate-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: teachmate-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: ENVIRONMENT
+        value: production
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAMESITE
+        value: "none"
+      - key: CORS_ORIGINS
+        value: "*"
+
+  # Frontend React Static Site
+  - type: web
+    name: teachmate-frontend
+    runtime: static
+    rootDir: frontend
+    plan: free
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false
