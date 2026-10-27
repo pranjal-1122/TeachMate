@@ -15,6 +15,11 @@ export interface Session {
   updated_at: string;
 }
 
+export interface QuestionOption {
+  id: string; // "A", "B", "C", "D"
+  text: string;
+}
+
 export interface AssessmentQuestion {
   id: string;
   position: number;
@@ -22,6 +27,8 @@ export interface AssessmentQuestion {
   concept: string;
   difficulty: 'easy' | 'medium' | 'hard';
   type: 'conceptual' | 'application' | 'misconception';
+  format?: 'mcq' | 'theoretical';
+  options?: QuestionOption[] | null;
 }
 
 export interface AssessmentPayload {

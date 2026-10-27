@@ -37,8 +37,15 @@ class MockLLMClient(BaseLLMClient):
                         "concept": "Fundamental Principles & Equilibrium",
                         "difficulty": "easy",
                         "type": "conceptual",
-                        "rubric_criteria": "Teacher accurately explains the baseline concept without confusing force with velocity.",
-                        "reference_explanation": "An object maintains its state of rest or uniform motion unless acted upon by a net external force."
+                        "format": "mcq",
+                        "options": [
+                            {"id": "A", "text": "An object maintains its state of rest or uniform motion unless acted upon by a net external force."},
+                            {"id": "B", "text": "An object immediately slows down to zero velocity when net force is absent."},
+                            {"id": "C", "text": "Continuous positive force is required to sustain steady constant velocity."},
+                            {"id": "D", "text": "Inertia continuously increases proportionally as velocity increases."}
+                        ],
+                        "rubric_criteria": "Teacher accurately selects Option A and explains the baseline concept without confusing force with velocity.",
+                        "reference_explanation": "Option A is correct: Newton's first law states an object maintains uniform motion unless an unbalanced force acts."
                     },
                     {
                         "position": 2,
@@ -46,6 +53,8 @@ class MockLLMClient(BaseLLMClient):
                         "concept": "Inertia and Reference Frames",
                         "difficulty": "medium",
                         "type": "application",
+                        "format": "theoretical",
+                        "options": None,
                         "rubric_criteria": "Must reference inertia of motion; resistance to change in velocity; forces on passenger feet vs torso.",
                         "reference_explanation": "The passenger's body continues moving forward at the previous velocity due to inertia while the bus decelerates."
                     },
@@ -55,17 +64,26 @@ class MockLLMClient(BaseLLMClient):
                         "concept": "Force-Mass-Acceleration Dynamics",
                         "difficulty": "medium",
                         "type": "application",
+                        "format": "theoretical",
+                        "options": None,
                         "rubric_criteria": "Must cite F = ma correctly, units (N, kg, m/s^2), and inverse proportionality of mass to acceleration.",
                         "reference_explanation": "Acceleration is directly proportional to net force and inversely proportional to mass: a = F/m."
                     },
                     {
                         "position": 4,
-                        "question": "Address the common misconception: 'Heavier objects fall faster in a vacuum because gravity pulls them harder.' How do you correct this?",
+                        "question": "Which statement best diagnoses and corrects the student misconception that 'heavier objects always fall faster in vacuum'?",
                         "concept": "Gravitational Mass vs Inertial Mass",
                         "difficulty": "hard",
                         "type": "misconception",
-                        "rubric_criteria": "Teacher distinguishes gravitational force (weight = mg) from acceleration (a = F/m = g), showing mass cancels out.",
-                        "reference_explanation": "Greater gravitational force on larger mass is exactly balanced by greater inertia, yielding identical acceleration g."
+                        "format": "mcq",
+                        "options": [
+                            {"id": "A", "text": "Greater gravitational pull on larger mass is exactly balanced by greater inertia, yielding identical acceleration g = F/m."},
+                            {"id": "B", "text": "Heavier objects encounter zero vacuum resistance while lighter objects encounter lingering quantum friction."},
+                            {"id": "C", "text": "Gravity does not apply to heavy masses in vacuum environments."},
+                            {"id": "D", "text": "Only light objects experience terminal velocity in free vacuum conditions."}
+                        ],
+                        "rubric_criteria": "Teacher selects Option A, distinguishing weight from acceleration showing mass cancels out.",
+                        "reference_explanation": "Option A is correct: The gravitational force is proportional to mass (F=mg), but acceleration is a=F/m=g, so mass cancels."
                     },
                     {
                         "position": 5,
@@ -73,8 +91,10 @@ class MockLLMClient(BaseLLMClient):
                         "concept": "Motion Without Continuous Force",
                         "difficulty": "hard",
                         "type": "conceptual",
-                        "rubric_criteria": "Teacher emphasizes NO force is needed to sustain constant velocity; misconceptions about continuous force are refuted.",
-                        "reference_explanation": "No force keeps it moving; once released, inertia maintains uniform velocity indefinitely in the absence of opposing force."
+                        "format": "theoretical",
+                        "options": None,
+                        "rubric_criteria": "Clarifies that no force is required to sustain motion; inertia is a property, not a force.",
+                        "reference_explanation": "No forward force exists once released; by inertia the ball continues at constant velocity."
                     }
                 ]
             }
@@ -202,7 +222,7 @@ A common misconception is that motion requires a continuous force. In reality:
                     {
                         "type": "mermaid",
                         "title": "Force and Acceleration Flow",
-                        "spec": "graph TD\n  A[Net External Force] -->|Non-Zero| B[Unbalanced System]\n  B --> C[Acceleration a = F/m]\n  A -->|Zero Net Force| D[Balanced Equilibrium]\n  D --> E[Constant Velocity / Rest]"
+                        "spec": 'graph TD\n  A["Net External Force"] -->|Non-Zero| B["Unbalanced System"]\n  B --> C["Acceleration a = F/m"]\n  A -->|Zero Net Force| D["Balanced Equilibrium"]\n  D --> E["Constant Velocity / Rest"]'
                     }
                 ],
                 "activities": [

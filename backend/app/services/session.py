@@ -47,6 +47,7 @@ class SessionService:
 
             # Persist questions
             for q in assessment_data.questions:
+                options_data = [opt.model_dump() for opt in q.options] if q.options else None
                 db_q = AssessmentQuestion(
                     session_id=session.id,
                     position=q.position,
@@ -54,6 +55,8 @@ class SessionService:
                     concept=q.concept,
                     difficulty=q.difficulty,
                     type=q.type,
+                    format=getattr(q, "format", "theoretical"),
+                    options=options_data,
                     rubric_criteria=q.rubric_criteria,
                     reference_explanation=q.reference_explanation
                 )
@@ -177,6 +180,8 @@ class SessionService:
             analysis_input.append({
                 "position": q.position,
                 "question": q.question,
+                "format": getattr(q, "format", "theoretical"),
+                "options": q.options,
                 "concept": q.concept,
                 "difficulty": q.difficulty,
                 "rubric_criteria": q.rubric_criteria,

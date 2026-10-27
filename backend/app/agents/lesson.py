@@ -14,7 +14,10 @@ Rules:
    - Narrative & Storytelling (historical or contextual breakthrough)
    - Conceptual Explanation (clarity, depth, and relatable analogies)
    - Real-world Application (practical daily or technological instances)
-3. Visual Specs: Provide 1 valid Mermaid flowchart or state diagram showing the conceptual relationships. Do NOT output invalid syntax.
+3. Visual Specs: Provide 1 valid Mermaid flowchart or state diagram showing the conceptual relationships.
+   - MANDATORY: Always wrap node label text inside double quotes: e.g. A["Node 1: Data | Next"] --> B["Node 2"].
+   - NEVER use raw unquoted pipe characters (|), colons (:), or parentheses inside node brackets.
+   - Start diagram with `graph TD` or `flowchart LR`.
 4. Activities: 1 to 2 engaging, low-cost classroom activities with clear timings and instructions.
 5. Summary: Concise, punchy core takeaways.
 """

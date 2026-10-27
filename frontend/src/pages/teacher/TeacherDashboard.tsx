@@ -201,14 +201,27 @@ export const TeacherDashboard: React.FC = () => {
                           <span><strong>Grade:</strong> {session.grade_level}</span>
                           <span>•</span>
                           <span><strong>Duration:</strong> {session.duration_minutes} min</span>
-                          {session.score !== null && session.score !== undefined && (
+                          {session.score !== null && session.score !== undefined ? (
                             <>
                               <span>•</span>
                               <span>
                                 <strong>Score:</strong>{' '}
-                                <span className={session.score >= 80 ? 'text-emerald-600 font-bold' : 'text-amber-600 font-bold'}>
-                                  {session.score}%
+                                <span className={
+                                  session.score >= 80
+                                    ? 'text-emerald-600 dark:text-emerald-400 font-bold'
+                                    : session.score >= 40
+                                    ? 'text-amber-600 dark:text-amber-400 font-bold'
+                                    : 'text-red-600 dark:text-red-400 font-bold'
+                                }>
+                                  {Math.round(session.score)}%
                                 </span>
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <span>•</span>
+                              <span className="italic text-slate-muted dark:text-slate-darkMuted">
+                                Assessment Pending
                               </span>
                             </>
                           )}

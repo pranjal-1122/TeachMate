@@ -91,43 +91,24 @@
 ---
 
 ## Known Bugs and Blockers
-- None currently. Environment has Python 3.14, Node v26.10, npm 11.19, and Homebrew. PostgreSQL service setup to be initialized during Phase 1.
-
----
-
-## Files Created or Modified
-- [`chat.md`](file:///Users/pranjal/Desktop/TeachMate/chat.md) — Persistent development memory and roadmap tracker updated.
-- [`TeachMate_Updated_Development_Spec.md`](file:///Users/pranjal/Desktop/TeachMate/TeachMate_Updated_Development_Spec.md) — Analyzed primary specification.
-- [`implementation_plan.md`](file:///Users/pranjal/.gemini/antigravity-ide/brain/e311a34b-09c5-429c-96ad-ed90add63bea/implementation_plan.md) — Complete architecture and implementation plan artifact.
-- [`backend/requirements.txt`](file:///Users/pranjal/Desktop/TeachMate/backend/requirements.txt) — Backend dependencies specified.
-- [`backend/.env.example`](file:///Users/pranjal/Desktop/TeachMate/backend/.env.example) — Documented configuration parameters.
-- [`backend/app/config.py`](file:///Users/pranjal/Desktop/TeachMate/backend/app/config.py) — Application settings and environment variables.
-- [`backend/app/database/connection.py`](file:///Users/pranjal/Desktop/TeachMate/backend/app/database/connection.py) — SQLAlchemy engine and sessionmaker.
-- [`backend/app/models/entities.py`](file:///Users/pranjal/Desktop/TeachMate/backend/app/models/entities.py) — 16 relational data models.
-- [`backend/app/database/init_db.py`](file:///Users/pranjal/Desktop/TeachMate/backend/app/database/init_db.py) — Table creation and badge seeding script.
-- [`backend/alembic/`](file:///Users/pranjal/Desktop/TeachMate/backend/alembic) — Initial migration generated and database stamped at head.
-- [`backend/app/schemas/common.py`](file:///Users/pranjal/Desktop/TeachMate/backend/app/schemas/common.py) — Canonical error envelopes (`APIException`).
-- [`backend/app/schemas/auth.py`](file:///Users/pranjal/Desktop/TeachMate/backend/app/schemas/auth.py) — User registration and login schemas.
-- [`backend/app/services/auth.py`](file:///Users/pranjal/Desktop/TeachMate/backend/app/services/auth.py) — Argon2 hashing, JWT generation, cookie resolution, role guards.
-- [`backend/app/api/auth.py`](file:///Users/pranjal/Desktop/TeachMate/backend/app/api/auth.py) — `/auth/register`, `/auth/login`, `/auth/logout`, `/auth/me`.
-- [`backend/app/main.py`](file:///Users/pranjal/Desktop/TeachMate/backend/app/main.py) — FastAPI app with CORS, lifespan DB init, and error handlers.
-- [`backend/tests/conftest.py`](file:///Users/pranjal/Desktop/TeachMate/backend/tests/conftest.py) — Test fixtures with in-memory SQLite database.
-- [`backend/tests/test_auth.py`](file:///Users/pranjal/Desktop/TeachMate/backend/tests/test_auth.py) — 7 unit tests verifying auth, errors, and sessions.
-- [`frontend/`](file:///Users/pranjal/Desktop/TeachMate/frontend) — Scaffolded Vite React-TS project with Tailwind CSS 60-30-10 palette, Lucide icons, TanStack Query, and verified build.
+- **RESOLVED**: Targeted revision and micro-card text was rendering raw unparsed Markdown syntax (`###`, `**bold**`, `` `code` ``). Fixed by implementing `MarkdownRenderer` using `react-markdown` with customized typography and syntax styling.
+- **RESOLVED**: Mermaid diagram bomb crash (`Syntax error in text mermaid version 12.2.0: Parse error on line 1: ... -> B[Node 1: Data | Next] -> C[Node 2 ... got 'PIPE'`). Fixed by implementing regex sanitization of unquoted special characters in node brackets (`[|:();]`), configuring `suppressErrorRendering: true`, removing any injected Mermaid error nodes from the DOM, and strengthening LLM Mermaid prompt constraints.
+- **RESOLVED**: Score / readiness % desynchronization (`Current Mastery: 50%` vs `Score: 0%` on dashboard). Fixed by replacing falsy fallback `session.score || 50` with nullish coalescing `session.score ?? 0` in `RevisionPage.tsx` and adding score color coding and status badges in `TeacherDashboard.tsx`.
+- **RESOLVED**: Diagnostic assessment lack of variety (only essays). Upgraded to a pedagogically balanced mix: Questions 1 & 4 as interactive MCQs with 4 options (A, B, C, D) and optional teacher rationale, and Questions 2, 3, & 5 as open-ended theoretical questions.
 
 ---
 
 ## Last Test Results
-- `pytest tests/test_auth.py`: 7 passed in 0.25s (Health check, teacher registration, duplicate prevention, 422 canonical error format, student login/logout, invalid credentials, unauthenticated guard).
-- `npm --prefix frontend run build`: TypeScript typecheck and Vite build succeeded in 393ms.
-- PostgreSQL 16: Started, connected, 16 tables created and stamped with Alembic.
+- `PYTHONPATH=. ./venv/bin/pytest tests/ -v`: 16 passed in 0.73s across all test suites (auth, sessions, lessons, quizzes, revision, and gamification).
+- `npm run build` in `frontend/`: TypeScript compilation and Rollup bundling succeeded in 658ms with 0 errors.
+- Live E2E Gemini generation verified: Question 1 & 4 generated as MCQs with 4 distinct options, Questions 2, 3, 5 as theoretical; live submission and scoring verified with 100% dashboard synchronization.
+- Cloudflare Tunnel live: `https://rare-unnecessary-dodge-velvet.trycloudflare.com` serving unified SPA and FastAPI backend.
 
 ---
 
-## Next Recommended Action
-Implement **Phase 2: Assessment Engine & Agent Node**:
-1. Implement LLM client layer (`backend/app/llm/`) with structured output support and mock adapter.
-2. Build Assessment Agent (`backend/app/agents/assessment.py`) generating 5 questions.
-3. Build Knowledge Analyzer (`backend/app/agents/analyzer.py`) evaluating answers against rubrics.
-4. Implement Session endpoints (`/sessions`, `/sessions/{id}`, `/sessions/{id}/assessment`, `/sessions/{id}/answers`).
+## Completed Goals
+1. Mermaid Diagram parsing robustness & bomb error suppression.
+2. Score & readiness % synchronization across Dashboard, Revision, and Session pages.
+3. Mixed Question Formats (Interactive MCQs + Open-ended Theoretical).
+4. Full end-to-end testing and verification.
 

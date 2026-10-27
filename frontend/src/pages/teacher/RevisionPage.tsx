@@ -31,7 +31,7 @@ export const RevisionPage: React.FC = () => {
       const session = await sessionsApi.get(sessionId);
       setSessionTopic(session.topic);
       setExpectedVersion(session.version);
-      setCurrentScore(session.score || 50);
+      setCurrentScore(session.score ?? 0);
       setSessionStatus(session.status);
 
       if (session.status === 'awaiting_teacher_choice') {

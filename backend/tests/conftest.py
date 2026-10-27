@@ -4,10 +4,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.config import settings
 from app.database.connection import Base, get_db
 from app.models.entities import BadgeDefinition
 from app.database.init_db import DEFAULT_BADGES
 from app.main import app
+
+# Ensure mock LLM is used during automated test runs for determinism & speed
+settings.USE_MOCK_LLM = True
 
 # In-memory SQLite database for isolated test execution
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"

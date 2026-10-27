@@ -76,6 +76,35 @@ export const AssessmentPage: React.FC = () => {
   const answeredCount = questions.filter((q) => (answers[q.id] || '').trim().length > 0).length;
   const allAnswered = questions.length === 5 && answeredCount === 5;
 
+  const currentAnswerText = currentQ ? (answers[currentQ.id] || '') : '';
+
+  const selectedOptionId = (() => {
+    if (!currentQ || currentQ.format !== 'mcq') return null;
+    const match = currentAnswerText.match(/Selected Option:\s*\[([A-D])\]/i) || currentAnswerText.match(/^Option\s*([A-D])/i);
+    return match ? match[1].toUpperCase() : null;
+  })();
+
+  const currentRationale = (() => {
+    if (!currentQ || currentQ.format !== 'mcq') return '';
+    const parts = currentAnswerText.split(/\nRationale:\s*/i);
+    return parts.length > 1 ? parts[1] : '';
+  })();
+
+  const handleSelectOption = (optId: string, optText: string) => {
+    const rationalePart = currentRationale.trim() ? `\nRationale: ${currentRationale.trim()}` : '';
+    const formatted = `Selected Option: [${optId}] ${optText}${rationalePart}`;
+    handleAnswerChange(formatted);
+  };
+
+  const handleRationaleChange = (newRationale: string) => {
+    if (!selectedOptionId || !currentQ.options) return;
+    const currentOpt = currentQ.options.find((o) => o.id === selectedOptionId);
+    const optText = currentOpt ? currentOpt.text : '';
+    const rationalePart = newRationale.trim() ? `\nRationale: ${newRationale.trim()}` : '';
+    const formatted = `Selected Option: [${selectedOptionId}] ${optText}${rationalePart}`;
+    handleAnswerChange(formatted);
+  };
+
   const handleSubmit = async () => {
     if (!sessionId || !allAnswered) return;
 
@@ -139,6 +168,8 @@ export const AssessmentPage: React.FC = () => {
     }
   };
 
+  const isMCQ = currentQ.format === 'mcq' && Boolean(currentQ.options && currentQ.options.length > 0);
+
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
       {/* Header Topic & Progress Bar */}
@@ -173,6 +204,9 @@ export const AssessmentPage: React.FC = () => {
       <Card className="p-6 sm:p-8 bg-[#FDFCF7] dark:bg-surface-dark border-2 border-line-light dark:border-line-dark shadow-raised mb-6">
         {/* Meta badges */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
+          <StatusBadge variant={isMCQ ? 'accent' : 'neutral'}>
+            {isMCQ ? 'Multiple Choice' : 'Written Explanation'}
+          </StatusBadge>
           <StatusBadge variant="neutral">
             Concept: {currentQ.concept}
           </StatusBadge>
@@ -189,30 +223,90 @@ export const AssessmentPage: React.FC = () => {
           {currentQ.question}
         </h2>
 
-        {/* Answer Textarea */}
-        <div>
-          <label
-            htmlFor="answerInput"
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-reading dark:text-structure-dark mb-2"
-          >
-            Your Explanation / Pedagogical Answer *
-          </label>
-          <textarea
-            id="answerInput"
-            rows={7}
-            required
-            value={answers[currentQ.id] || ''}
-            onChange={(e) => handleAnswerChange(e.target.value)}
-            placeholder="Type your explanation as you would present or justify this concept in class..."
-            className="w-full p-4 text-sm rounded-card bg-[#F5F3ED] dark:bg-[#1E3029] border border-line-light dark:border-line-dark text-slate-reading dark:text-structure-dark focus:border-accent focus:outline-none resize-y leading-relaxed font-sans"
-          />
-          <div className="flex justify-between items-center text-xs text-slate-muted mt-2">
-            <span>Draft automatically saved locally</span>
-            <span className="tabular-nums">
-              {(answers[currentQ.id] || '').length} characters
-            </span>
+        {/* Input Interface: MCQ Options vs Theoretical Textarea */}
+        {isMCQ ? (
+          <div className="space-y-5">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-reading dark:text-structure-dark mb-3">
+                Select Option *
+              </label>
+              <div className="grid grid-cols-1 gap-3">
+                {currentQ.options?.map((opt) => {
+                  const isSelected = selectedOptionId === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => handleSelectOption(opt.id, opt.text)}
+                      className={`w-full flex items-start gap-3.5 p-4 rounded-card border-2 text-left transition-all cursor-pointer ${
+                        isSelected
+                          ? 'border-accent bg-accent/10 dark:bg-accent/25 text-structure-light dark:text-structure-dark font-medium shadow-sm'
+                          : 'border-line-light dark:border-line-dark hover:border-accent/40 bg-white dark:bg-[#1E3029]/70 text-slate-reading dark:text-slate-darkReading'
+                      }`}
+                    >
+                      <div
+                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
+                          isSelected
+                            ? 'bg-accent text-white dark:bg-accent-dark'
+                            : 'bg-[#EDE9DE] dark:bg-surface-dark border border-line-light dark:border-line-dark text-slate-reading dark:text-structure-dark'
+                        }`}
+                      >
+                        {opt.id}
+                      </div>
+                      <span className="text-sm leading-relaxed pt-0.5">{opt.text}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Optional Rationale */}
+            <div className="pt-2 border-t border-line-light dark:border-line-dark">
+              <label
+                htmlFor="rationaleInput"
+                className="block text-xs font-semibold uppercase tracking-wider text-slate-reading dark:text-structure-dark mb-2"
+              >
+                Teacher Rationale / Pedagogical Notes (Optional)
+              </label>
+              <textarea
+                id="rationaleInput"
+                rows={3}
+                value={currentRationale}
+                onChange={(e) => handleRationaleChange(e.target.value)}
+                placeholder="Explain why you selected this option or how you clarify this to students..."
+                className="w-full p-3 text-sm rounded-card bg-[#F5F3ED] dark:bg-[#1E3029] border border-line-light dark:border-line-dark text-slate-reading dark:text-structure-dark focus:border-accent focus:outline-none resize-y leading-relaxed font-sans"
+              />
+              <div className="flex justify-between items-center text-xs text-slate-muted mt-2">
+                <span>{selectedOptionId ? `Option ${selectedOptionId} selected` : 'Select an option above to answer'}</span>
+                <span>Draft auto-saved</span>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div>
+            <label
+              htmlFor="answerInput"
+              className="block text-xs font-semibold uppercase tracking-wider text-slate-reading dark:text-structure-dark mb-2"
+            >
+              Your Explanation / Pedagogical Answer *
+            </label>
+            <textarea
+              id="answerInput"
+              rows={7}
+              required
+              value={answers[currentQ.id] || ''}
+              onChange={(e) => handleAnswerChange(e.target.value)}
+              placeholder="Type your explanation as you would present or justify this concept in class..."
+              className="w-full p-4 text-sm rounded-card bg-[#F5F3ED] dark:bg-[#1E3029] border border-line-light dark:border-line-dark text-slate-reading dark:text-structure-dark focus:border-accent focus:outline-none resize-y leading-relaxed font-sans"
+            />
+            <div className="flex justify-between items-center text-xs text-slate-muted mt-2">
+              <span>Draft automatically saved locally</span>
+              <span className="tabular-nums">
+                {(answers[currentQ.id] || '').length} characters
+              </span>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Bottom Step Navigation & Submit Action */}

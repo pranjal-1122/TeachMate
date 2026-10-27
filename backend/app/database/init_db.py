@@ -1,4 +1,5 @@
 import logging
+from sqlalchemy import text
 from app.database.connection import engine, Base, SessionLocal
 from app.models.entities import BadgeDefinition
 
@@ -42,6 +43,15 @@ DEFAULT_BADGES = [
 def init_db():
     # Create all tables if they do not exist
     Base.metadata.create_all(bind=engine)
+
+    # Safe incremental schema migration
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE assessment_questions ADD COLUMN IF NOT EXISTS format VARCHAR(20) DEFAULT 'theoretical';"))
+            conn.execute(text("ALTER TABLE assessment_questions ADD COLUMN IF NOT EXISTS options JSON;"))
+            conn.commit()
+    except Exception as e:
+        logger.warning(f"Note on schema column check (may already exist or unsupported): {e}")
     
     # Seed default badges
     db = SessionLocal()

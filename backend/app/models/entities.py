@@ -71,6 +71,8 @@ class AssessmentQuestion(Base):
     concept = Column(String(150), nullable=False)
     difficulty = Column(String(20), nullable=False)  # easy, medium, hard
     type = Column(String(30), nullable=False)  # conceptual, application, misconception
+    format = Column(String(20), nullable=False, default="theoretical")  # "mcq" | "theoretical"
+    options = Column(JSON, nullable=True)  # List of {id, text} for MCQs
     rubric_criteria = Column(Text, nullable=False)
     reference_explanation = Column(Text, nullable=True)  # Server-only reference
 

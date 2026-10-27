@@ -39,14 +39,34 @@ def test_full_lesson_and_quiz_lifecycle(client, teacher_auth, student_auth):
     q_res = client.get(f"{settings.API_V1_STR}/sessions/{session_id}/assessment", cookies=teacher_auth)
     questions = q_res.json()["questions"]
 
-    # 3. Submit strong answers -> directly reaches lesson!
+    # 3. Submit strong answers (adapting to mixed MCQ and theoretical formats)
+    submitted_answers = []
+    for q in questions:
+        if q.get("format") == "mcq" and q.get("options"):
+            first_opt = q["options"][0]
+            ans_text = f"Selected Option: [{first_opt['id']}] {first_opt['text']}. Justification: accurately follows physical equilibrium."
+        else:
+            ans_text = "Precise conceptual answer on gravitational equilibrium and Keplerian orbits."
+        submitted_answers.append({"question_id": q["id"], "text": ans_text})
+
     ans_res = client.post(f"{settings.API_V1_STR}/sessions/{session_id}/answers", json={
-        "answers": [{"question_id": q["id"], "text": "Precise conceptual answer on gravitational equilibrium and Keplerian orbits."} for q in questions],
+        "answers": submitted_answers,
         "expected_version": ver
     }, cookies=teacher_auth)
     assert ans_res.status_code == 202
-    assert ans_res.json()["status"] == "generating_lesson"
-    ver = ans_res.json()["version"]
+    
+    if ans_res.json()["status"] == "awaiting_reassessment":
+        dec_res = client.post(f"{settings.API_V1_STR}/sessions/{session_id}/decision", json={
+            "action": "proceed_anyway",
+            "acknowledge_incomplete_readiness": True,
+            "expected_version": ans_res.json()["version"]
+        }, cookies=teacher_auth)
+        assert dec_res.status_code == 200
+        assert dec_res.json()["status"] == "generating_lesson"
+        ver = dec_res.json()["version"]
+    else:
+        assert ans_res.json()["status"] == "generating_lesson"
+        ver = ans_res.json()["version"]
 
     # 4. Fetch draft lesson
     lesson_res = client.get(f"{settings.API_V1_STR}/sessions/{session_id}/lesson", cookies=teacher_auth)

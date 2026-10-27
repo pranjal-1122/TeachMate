@@ -28,12 +28,18 @@ class SessionResponse(BaseModel):
 
 # --- Assessment Generation ---
 
+class QuestionOption(BaseModel):
+    id: str  # "A", "B", "C", "D"
+    text: str
+
 class QuestionSchema(BaseModel):
     position: int = Field(ge=1, le=5)
     question: str
     concept: str
     difficulty: str = Field(pattern="^(easy|medium|hard)$")
     type: str = Field(pattern="^(conceptual|application|misconception)$")
+    format: str = Field(default="theoretical", pattern="^(mcq|theoretical)$")
+    options: Optional[List[QuestionOption]] = None
     rubric_criteria: str
     reference_explanation: Optional[str] = None
 
@@ -49,6 +55,8 @@ class PublicAssessmentQuestion(BaseModel):
     concept: str
     difficulty: str
     type: str
+    format: str = "theoretical"
+    options: Optional[List[QuestionOption]] = None
 
 class AssessmentPayload(BaseModel):
     questions: List[PublicAssessmentQuestion]
