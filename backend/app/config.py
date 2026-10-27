@@ -16,7 +16,8 @@ class Settings(BaseSettings):
     DEBUG: bool = os.getenv("DEBUG", "true").lower() in ("true", "1")
 
     # Database: Auto-normalize cloud URLs (postgres:// -> postgresql+psycopg://)
-    _raw_db_url: str = os.getenv("DATABASE_URL", "postgresql+psycopg://localhost:5432/teachmate")
+    _default_db = "sqlite:////app/data/teachmate.db" if os.path.exists("/app/data") else "postgresql+psycopg://localhost:5432/teachmate"
+    _raw_db_url: str = os.getenv("DATABASE_URL", _default_db)
     if _raw_db_url.startswith("postgres://"):
         DATABASE_URL: str = _raw_db_url.replace("postgres://", "postgresql+psycopg://", 1)
     elif _raw_db_url.startswith("postgresql://") and "+psycopg" not in _raw_db_url:

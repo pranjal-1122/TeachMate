@@ -1,3 +1,14 @@
+---
+title: TeachMate - Agentic AI Teaching Preparation & Micro-Learning
+emoji: 🎓
+colorFrom: green
+colorTo: red
+sdk: docker
+app_port: 7860
+pinned: false
+license: mit
+---
+
 # TeachMate: Intelligent Teaching Preparation & Student Micro-Learning System
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?style=flat&logo=FastAPI&logoColor=white)](https://fastapi.tiangolo.com)

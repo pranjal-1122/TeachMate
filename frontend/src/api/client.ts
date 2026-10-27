@@ -21,7 +21,11 @@ export class APIClientError extends Error {
   }
 }
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== 'undefined' && window.location.port === '5173'
+    ? 'http://localhost:8000/api/v1'
+    : '/api/v1');
 
 export async function apiRequest<T>(
   endpoint: string,
