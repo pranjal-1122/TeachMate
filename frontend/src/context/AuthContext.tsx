@@ -22,8 +22,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await authApi.getMe();
       setUser(res.user);
+      if (res.access_token) {
+        localStorage.setItem('teachmate_token', res.access_token);
+      }
     } catch (err) {
       setUser(null);
+      localStorage.removeItem('teachmate_token');
     } finally {
       setIsLoading(false);
     }
@@ -36,12 +40,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (credentials: { email: string; password: string }) => {
     const res = await authApi.login(credentials);
     setUser(res.user);
+    if (res.access_token) {
+      localStorage.setItem('teachmate_token', res.access_token);
+    }
     return res.user;
   };
 
   const register = async (payload: { email: string; password: string; display_name: string; role: 'teacher' | 'student'; timezone?: string }) => {
     const res = await authApi.register(payload);
     setUser(res.user);
+    if (res.access_token) {
+      localStorage.setItem('teachmate_token', res.access_token);
+    }
     return res.user;
   };
 
@@ -49,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await authApi.logout();
     } finally {
+      localStorage.removeItem('teachmate_token');
       setUser(null);
     }
   };

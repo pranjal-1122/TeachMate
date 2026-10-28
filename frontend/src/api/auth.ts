@@ -11,6 +11,8 @@ export interface User {
 
 export interface AuthResponse {
   user: User;
+  access_token?: string;
+  token_type?: string;
 }
 
 export const authApi = {

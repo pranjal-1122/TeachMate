@@ -46,7 +46,7 @@ def register(payload: UserRegister, response: Response, db: Session = Depends(ge
     token = create_access_token(user.id, user.role)
     set_auth_cookie(response, token)
 
-    return AuthResponse(user=UserResponse.model_validate(user))
+    return AuthResponse(user=UserResponse.model_validate(user), access_token=token)
 
 @router.post("/login", response_model=AuthResponse)
 def login(payload: UserLogin, response: Response, db: Session = Depends(get_db)):
@@ -61,7 +61,7 @@ def login(payload: UserLogin, response: Response, db: Session = Depends(get_db))
     token = create_access_token(user.id, user.role)
     set_auth_cookie(response, token)
 
-    return AuthResponse(user=UserResponse.model_validate(user))
+    return AuthResponse(user=UserResponse.model_validate(user), access_token=token)
 
 @router.post("/logout")
 def logout(response: Response):
@@ -77,3 +77,4 @@ def logout(response: Response):
 @router.get("/me", response_model=AuthResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return AuthResponse(user=UserResponse.model_validate(current_user))
+

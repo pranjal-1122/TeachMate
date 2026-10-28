@@ -21,11 +21,17 @@ export class APIClientError extends Error {
   }
 }
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  (typeof window !== 'undefined' && window.location.port === '5173'
-    ? 'http://localhost:8000/api/v1'
-    : '/api/v1');
+const getBaseUrl = (): string => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined' && window.location.port === '5173') {
+    return `http://${window.location.hostname}:8000/api/v1`;
+  }
+  return '/api/v1';
+};
+
+const BASE_URL = getBaseUrl();
 
 export async function apiRequest<T>(
   endpoint: string,
@@ -33,9 +39,12 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const url = `${BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
+  const token = typeof window !== 'undefined' ? localStorage.getItem('teachmate_token') : null;
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.headers || {}),
   };
 

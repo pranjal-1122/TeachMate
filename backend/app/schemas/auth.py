@@ -22,5 +22,10 @@ class UserResponse(BaseModel):
     timezone: str
     created_at: datetime
 
+from typing import Optional
+
 class AuthResponse(BaseModel):
     user: UserResponse
+    access_token: Optional[str] = None
+    token_type: Optional[str] = "bearer"
+
